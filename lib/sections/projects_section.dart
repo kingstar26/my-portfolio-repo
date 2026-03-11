@@ -114,77 +114,82 @@ class _ProjectCardState extends State<_ProjectCard> {
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        transform: Matrix4.identity()..scale(scale),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(18),
-          child: Ink(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(18),
-              color: const Color(0xFF020617).withOpacity(0.95),
-              border: Border.all(color: Colors.white.withOpacity(0.06)),
-              boxShadow: _hovered
-                  ? [
-                      BoxShadow(
-                          color: Colors.cyanAccent.withOpacity(0.2),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6))
-                    ]
-                  : [],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Only show builtWith if not empty
-                if (widget.project.builtWith.isNotEmpty)
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _hovered = true),
+        onTapUp: (_) => setState(() => _hovered = false),
+        onTapCancel: () => setState(() => _hovered = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          transform: Matrix4.identity()..scale(scale),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            child: Ink(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18),
+                color: const Color(0xFF020617).withOpacity(0.95),
+                border: Border.all(color: Colors.white.withOpacity(0.06)),
+                boxShadow: _hovered
+                    ? [
+                        BoxShadow(
+                            color: Colors.cyanAccent.withOpacity(0.2),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6))
+                      ]
+                    : [],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Only show builtWith if not empty
+                  if (widget.project.builtWith.isNotEmpty)
+                    Text(
+                      widget.project.builtWith.toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.cyanAccent,
+                        fontSize: 11,
+                        letterSpacing: 1.2,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  if (widget.project.builtWith.isNotEmpty)
+                    const SizedBox(height: 8),
                   Text(
-                    widget.project.builtWith.toUpperCase(),
+                    widget.project.title,
                     style: const TextStyle(
                       color: Colors.cyanAccent,
-                      fontSize: 11,
-                      letterSpacing: 1.2,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                if (widget.project.builtWith.isNotEmpty)
-                  const SizedBox(height: 8),
-                Text(
-                  widget.project.title,
-                  style: const TextStyle(
-                    color: Colors.cyanAccent,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  widget.project.description,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 13,
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: widget.project.keyFeatures
-                      .map((t) => _Tag(text: t))
-                      .toList(),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _ProjectButton(
-                      text: "GitHub",
-                      url: widget.project.githubUrl,
+                  const SizedBox(height: 10),
+                  Text(
+                    widget.project.description,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13,
+                      height: 1.4,
                     ),
-                  ],
-                )
-              ],
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: widget.project.keyFeatures
+                        .map((t) => _Tag(text: t))
+                        .toList(),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      _ProjectButton(
+                        text: "GitHub",
+                        url: widget.project.githubUrl,
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
         ),

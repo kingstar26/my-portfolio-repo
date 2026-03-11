@@ -24,8 +24,15 @@ class ContactSection extends StatelessWidget {
       animation: controller,
       builder: (context, child) {
         final position = controller.hasClients ? controller.offset : 0;
-        final screenHeight = MediaQuery.of(context).size.height;
-        final progress = (position / screenHeight).clamp(0.0, 1.0);
+        final media = MediaQuery.of(context);
+        final screenHeight = media.size.height;
+        final isMobile = media.size.width < 800;
+
+        // Make the scroll animation a bit more dramatic on smaller screens.
+        final rawProgress = position / screenHeight;
+        final progress = rawProgress.clamp(0.0, 1.0);
+        final maxOffset = isMobile ? 70.0 : 40.0;
+        final baseOpacity = isMobile ? 0.7 : 0.9;
 
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
@@ -34,8 +41,11 @@ class ContactSection extends StatelessWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1100),
               child: Transform.translate(
-                offset: Offset(0, 40 * (1 - progress)),
-                child: Opacity(opacity: 0.9 + (0.1 * progress), child: child),
+                offset: Offset(0, maxOffset * (1 - progress)),
+                child: Opacity(
+                  opacity: baseOpacity + (1 - baseOpacity) * progress,
+                  child: child,
+                ),
               ),
             ),
           ),
@@ -162,6 +172,9 @@ class _ContactActionCardState extends State<_ContactActionCard> {
       onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
         onTap: widget.onTap,
+        onTapDown: (_) => setState(() => _hovered = true),
+        onTapUp: (_) => setState(() => _hovered = false),
+        onTapCancel: () => setState(() => _hovered = false),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           transform: Matrix4.identity()..scale(_hovered ? 1.04 : 1.0),

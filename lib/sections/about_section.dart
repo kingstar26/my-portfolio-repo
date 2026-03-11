@@ -12,19 +12,26 @@ class AboutSection extends StatelessWidget {
       animation: controller,
       builder: (context, child) {
         final position = controller.hasClients ? controller.offset : 0;
-        final screenHeight = MediaQuery.of(context).size.height;
-        final progress = (position / screenHeight).clamp(0.0, 1.0);
+        final media = MediaQuery.of(context);
+        final screenHeight = media.size.height;
+        final isMobile = media.size.width < 800;
+
+        // Make the scroll animation a bit more dramatic on smaller screens.
+        final rawProgress = position / screenHeight;
+        final progress = rawProgress.clamp(0.0, 1.0);
+        final maxOffset = isMobile ? 70.0 : 40.0;
+        final baseOpacity = isMobile ? 0.7 : 0.9;
 
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
           child: Align(
             alignment: Alignment.centerLeft,
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1100),
               child: Transform.translate(
-                offset: Offset(0, 40 * (1 - progress)),
+                offset: Offset(0, maxOffset * (1 - progress)),
                 child: Opacity(
-                  opacity: 0.9 + 0.1 * progress,
+                  opacity: baseOpacity + (1 - baseOpacity) * progress,
                   child: child,
                 ),
               ),
@@ -165,49 +172,54 @@ class _AboutTagState extends State<_AboutTag> with SingleTickerProviderStateMixi
         cursor: SystemMouseCursors.click,
         onEnter: (_) => setState(() => _hovered = true),
         onExit: (_) => setState(() => _hovered = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          transform: Matrix4.identity()..scale(_hovered ? 1.05 : 1.0),
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            color: const Color.fromARGB(243, 2, 6, 23),
-            border: Border.all(
-              color: _hovered
-                  ? Colors.cyanAccent
-                  : const Color.fromARGB(20, 255, 255, 255),
+        child: GestureDetector(
+          onTapDown: (_) => setState(() => _hovered = true),
+          onTapUp: (_) => setState(() => _hovered = false),
+          onTapCancel: () => setState(() => _hovered = false),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            transform: Matrix4.identity()..scale(_hovered ? 1.05 : 1.0),
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              color: const Color.fromARGB(243, 2, 6, 23),
+              border: Border.all(
+                color: _hovered
+                    ? Colors.cyanAccent
+                    : const Color.fromARGB(20, 255, 255, 255),
+              ),
+              boxShadow: _hovered
+                  ? [
+                      BoxShadow(
+                        color: Colors.cyanAccent.withAlpha(64),
+                        blurRadius: 20,
+                        spreadRadius: 1,
+                      )
+                    ]
+                  : [],
             ),
-            boxShadow: _hovered
-                ? [
-                    BoxShadow(
-                      color: Colors.cyanAccent.withAlpha(64),
-                      blurRadius: 20,
-                      spreadRadius: 1,
-                    )
-                  ]
-                : [],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                widget.title,
-                style: const TextStyle(
-                  color: Colors.cyanAccent,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  widget.title,
+                  style: const TextStyle(
+                    color: Colors.cyanAccent,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                widget.description,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 13,
+                const SizedBox(height: 8),
+                Text(
+                  widget.description,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 13,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

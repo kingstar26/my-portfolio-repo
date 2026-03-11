@@ -17,7 +17,7 @@ class HeroSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       constraints: const BoxConstraints(minHeight: 500, maxHeight: 720),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final isMobile = constraints.maxWidth < 800;
@@ -65,7 +65,7 @@ class HeroSection extends StatelessWidget {
                     .bodyLarge
                     ?.copyWith(height: 1.4),
               ),
-              SizedBox(height: isMobile ? 24 : 32),
+              SizedBox(height: isMobile ? 16 : 28),
               Row(
                 mainAxisAlignment: isMobile
                     ? MainAxisAlignment.center
@@ -149,23 +149,28 @@ class _HeroButtonState extends State<_HeroButton> {
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        transform: transform,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: color,
-            side: BorderSide(color: borderColor),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-          ),
-          onPressed: widget.onTap,
-          child: Text(
-            widget.text,
-            style: TextStyle(
-              color: widget.isPrimary ? Colors.black : Colors.cyanAccent,
-              fontWeight: FontWeight.w600,
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _hovered = true),
+        onTapUp: (_) => setState(() => _hovered = false),
+        onTapCancel: () => setState(() => _hovered = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          transform: transform,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: color,
+              side: BorderSide(color: borderColor),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(999)),
+            ),
+            onPressed: widget.onTap,
+            child: Text(
+              widget.text,
+              style: TextStyle(
+                color: widget.isPrimary ? Colors.black : Colors.cyanAccent,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ),
